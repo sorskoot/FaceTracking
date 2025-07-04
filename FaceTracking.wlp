@@ -14,7 +14,8 @@
                     }
                 },
                 {
-                    "type": "mouse-look"
+                    "type": "mouse-look",
+                    "active": false
                 }
             ],
             "scaling": [
@@ -37,7 +38,8 @@
                         "videoObject": 0,
                         "camera": "77",
                         "leftEye": "93",
-                        "rightEye": "94"
+                        "rightEye": "94",
+                        "useLandmarks": true
                     }
                 }
             ],
@@ -121,13 +123,13 @@
             "parent": "80",
             "translation": [
                 2.3841835172788706e-7,
-                4.999999,
-                0.0
+                6.1033344,
+                5.8298344
             ],
             "scaling": [
                 12.0,
                 12.0000095,
-                12.0000057
+                12.0000066
             ],
             "rotation": [
                 0.0,
@@ -140,7 +142,8 @@
                     "originalIndex": 0,
                     "active": false
                 }
-            ]
+            ],
+            "hiddenForLightBaking": false
         },
         "80": {
             "name": "offset",

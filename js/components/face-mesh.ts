@@ -14,15 +14,8 @@ import { mat4, quat, quat2, vec3 } from 'gl-matrix';
 /**
  * Solution options.
  */
-const solutionOptions: Options = {
-    selfieMode: true,
-    enableFaceGeometry: true,
-    maxNumFaces: 1,
-    refineLandmarks: false,
-    minDetectionConfidence: 0.6,
-    minTrackingConfidence: 0.6,
-    cameraVerticalFovDegrees: 45,
-};
+const rotationQuat = quat.create();
+const translateVec = vec3.create();
 
 export class FaceMeshComponent extends Component {
     static TypeName = 'face-mesh';
@@ -38,9 +31,13 @@ export class FaceMeshComponent extends Component {
     @property.object({ required: true })
     rightEye!: Object3D;
 
+    @property.bool(false)
+    useLandmarks = false;
+
     videoWidth: number;
     videoHeight: number;
     private _selectedDevice: MediaDeviceInfo;
+    private _latestPoseMatrix: MatrixData | null = null;
 
     init() {}
 
@@ -77,12 +74,7 @@ export class FaceMeshComponent extends Component {
     start() {
         this._view = this.camera.getComponent(ViewComponent);
         console.log(this.engine.canvas.clientWidth);
-        //      this._view.extent = this.videoWidth;
         const z = 1;
-        // this.engine.canvas.height /
-        // 10 /
-        // 2 /
-        // Math.tan(((this._view.fov / 2) * Math.PI) / 180);
         this.camera.setPositionWorld([0, 0, -z]);
 
         const str = 'Elgato Facecam (0fd9:0078)';
@@ -99,6 +91,17 @@ export class FaceMeshComponent extends Component {
         }
     }
 
+    private _getSolutionOptions(): Options {
+        return {
+            selfieMode: true,
+            enableFaceGeometry: this.useLandmarks ? false : true,
+            maxNumFaces: 1,
+            refineLandmarks: this.useLandmarks ? true : false,
+            minDetectionConfidence: 0.6,
+            minTrackingConfidence: 0.6,
+        };
+    }
+
     private _startFaceMesh() {
         this._videoElement = document.getElementById(
             'webcam-video'
@@ -106,7 +109,6 @@ export class FaceMeshComponent extends Component {
 
         this.videoHeight = this._videoElement.clientHeight;
         this.videoWidth = this._videoElement.clientWidth;
-        //        this.resizeRendererToDisplaySize();
 
         const faceMeshConfig: FaceMeshConfig = {
             locateFile: (file) => {
@@ -114,18 +116,18 @@ export class FaceMeshComponent extends Component {
             },
         };
         const faceMesh = new FaceMesh(faceMeshConfig);
-        faceMesh.setOptions(solutionOptions);
+        faceMesh.setOptions(this._getSolutionOptions());
         faceMesh.onResults(this.onResults);
 
         const camera = new Camera(this._videoElement, {
             onFrame: async () => {
                 await faceMesh.send({ image: this._videoElement });
             },
-            width: this.engine.canvas.clientWidth, //1280,
-            height: this.engine.canvas.clientHeight, //720,
+            width: this.engine.canvas.clientWidth,
+            height: this.engine.canvas.clientHeight,
         });
         camera.start();
-        //set src to this._selectedDevice
+
         if (this._selectedDevice) {
             navigator.mediaDevices
                 .getUserMedia({
@@ -139,120 +141,54 @@ export class FaceMeshComponent extends Component {
         }
     }
 
-    update(dt: number) {}
-
     onResults = (results: Results): void => {
+        if (
+            results.multiFaceLandmarks ||
+            results.multiFaceLandmarks.length > 0
+        ) {
+            return;
+        }
         if (results.multiFaceGeometry && results.multiFaceGeometry.length > 0) {
             const faceGeometry = results.multiFaceGeometry[0];
-            // const lm = transformLandmarks(results.multiFaceLandmarks[0]);
-
-            // lm.forEach((landmark, index) => {});
             const mesh = faceGeometry.getMesh();
-            // const leftEyeInner = results.multiFaceLandmarks[0][463];
-            // const rightEyeInner = results.multiFaceLandmarks[0][243];
-            // const width = this.engine.canvas.width;
-            // const height = this.engine.canvas.height;
 
-            // let midEyes = scaleLandmark(lm[168], width, height);
-            // this.leftEye.setPositionWorld([midEyes[0], midEyes[1], midEyes[2]]);
-            // console.log(
-            //     `Left eye inner: ${leftEyeInner.x * width}, ${
-            //         leftEyeInner.y * height
-            //     }, ${leftEyeInner.z * width * 100}`
-            // );
-
-            // this.leftEye.setPositionWorld([
-            //     leftEyeInner.x * width,
-            //     leftEyeInner.y * height,
-            //     leftEyeInner.z * width * 100,
-            // ]);
-            // this.rightEye.setPositionWorld([
-            //     rightEyeInner.x * width,
-            //     rightEyeInner.y * height,
-            //     rightEyeInner.z * width * 100,
-            // ]);
             if (mesh) {
-                const poseMatrix: MatrixData =
-                    faceGeometry.getPoseTransformMatrix();
-
-                const mat = mat4.fromValues(
-                    poseMatrix.getPackedDataList()[0],
-                    poseMatrix.getPackedDataList()[1],
-                    poseMatrix.getPackedDataList()[2],
-                    poseMatrix.getPackedDataList()[3],
-                    poseMatrix.getPackedDataList()[4],
-                    poseMatrix.getPackedDataList()[5],
-                    poseMatrix.getPackedDataList()[6],
-                    poseMatrix.getPackedDataList()[7],
-                    poseMatrix.getPackedDataList()[8],
-                    poseMatrix.getPackedDataList()[9],
-                    poseMatrix.getPackedDataList()[10],
-                    poseMatrix.getPackedDataList()[11],
-                    poseMatrix.getPackedDataList()[12],
-                    poseMatrix.getPackedDataList()[13],
-                    poseMatrix.getPackedDataList()[14],
-                    poseMatrix.getPackedDataList()[15]
-                );
-
-                // Adjust coordinate system from Mediapipe to Wonderland Engine
-                // const adjustMat = mat4.create();
-                // mat4.fromScaling(adjustMat, [1, 1, 1]);
-                // mat4.multiply(mat, adjustMat, mat);
-
-                // Extract rotation and translation
-                const rotationQuat = quat.create();
-                const translate = vec3.create();
-                mat4.getRotation(rotationQuat, mat);
-                mat4.getTranslation(translate, mat);
-
-                // Optional: Apply a scaling factor if translation seems off
-                const scaleFactor = 1; // Adjust this if needed
-                vec3.scale(translate, translate, scaleFactor);
-
-                // Apply rotation and translation to your object
-                this.object.setRotationWorld(rotationQuat);
-                this.object.setPositionWorld(translate);
+                this._latestPoseMatrix = faceGeometry.getPoseTransformMatrix();
             }
         }
     };
+
+    update(dt: number) {
+        if (this._latestPoseMatrix) {
+            const mat = mat4.fromValues(
+                this._latestPoseMatrix.getPackedDataList()[0],
+                this._latestPoseMatrix.getPackedDataList()[1],
+                this._latestPoseMatrix.getPackedDataList()[2],
+                this._latestPoseMatrix.getPackedDataList()[3],
+                this._latestPoseMatrix.getPackedDataList()[4],
+                this._latestPoseMatrix.getPackedDataList()[5],
+                this._latestPoseMatrix.getPackedDataList()[6],
+                this._latestPoseMatrix.getPackedDataList()[7],
+                this._latestPoseMatrix.getPackedDataList()[8],
+                this._latestPoseMatrix.getPackedDataList()[9],
+                this._latestPoseMatrix.getPackedDataList()[10],
+                this._latestPoseMatrix.getPackedDataList()[11],
+                this._latestPoseMatrix.getPackedDataList()[12],
+                this._latestPoseMatrix.getPackedDataList()[13],
+                this._latestPoseMatrix.getPackedDataList()[14],
+                this._latestPoseMatrix.getPackedDataList()[15]
+            );
+
+            mat4.getRotation(rotationQuat, mat);
+            mat4.getTranslation(translateVec, mat);
+
+            const scaleFactor = 1;
+            vec3.scale(translateVec, translateVec, scaleFactor);
+
+            this.object.setRotationWorld(rotationQuat);
+            this.object.setPositionWorld(translateVec);
+
+            this._latestPoseMatrix = null; // Clear after applying
+        }
+    }
 }
-
-const transformLandmarks = (landmarks) => {
-    if (!landmarks) {
-        return landmarks;
-    }
-
-    let hasVisiblity = !!landmarks.find((l) => l.visibility);
-
-    let minZ = 1e-4;
-
-    // currently mediapipe facemesh js
-    // has visibility set to undefined
-    // so we use a heuristic to set z position of facemesh
-    if (hasVisiblity) {
-        landmarks.forEach((landmark) => {
-            let { z, visibility } = landmark;
-            z = -z;
-            if (z < minZ && visibility) {
-                minZ = z;
-            }
-        });
-    } else {
-        minZ = Math.max(-landmarks[234].z, -landmarks[454].z);
-    }
-
-    return landmarks.map((landmark) => {
-        let { x, y, z } = landmark;
-        return {
-            x: -0.5 + x,
-            y: 0.5 - y,
-            z: -z - minZ,
-            visibility: landmark.visibility,
-        };
-    });
-};
-
-const scaleLandmark = (landmark, width, height): [number, number, number] => {
-    let { x, y, z } = landmark;
-    return [x * width, y * height, z * width];
-};
