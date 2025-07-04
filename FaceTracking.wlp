@@ -11,7 +11,8 @@
                         "extent": 100.0,
                         "far": 1000.0,
                         "fov": 90.0
-                    }
+                    },
+                    "active": true
                 },
                 {
                     "type": "mouse-look",
@@ -39,7 +40,9 @@
                         "camera": "77",
                         "leftEye": "93",
                         "rightEye": "94",
-                        "useLandmarks": true
+                        "useLandmarks": true,
+                        "depthOffset": 10.0,
+                        "nose": "97"
                     }
                 }
             ],
@@ -347,9 +350,9 @@
                 }
             ],
             "scaling": [
-                0.1,
-                0.1,
-                0.1
+                10.0,
+                10.0,
+                10.0
             ],
             "parent": "96",
             "rotation": [
@@ -387,7 +390,7 @@
                     "mesh": {
                         "material": "22"
                     },
-                    "active": true
+                    "active": false
                 }
             ]
         },
@@ -397,6 +400,119 @@
                 0.0,
                 -100.0,
                 0.0
+            ]
+        },
+        "97": {
+            "name": "Nose",
+            "parent": "96",
+            "components": [
+                {
+                    "type": "mesh",
+                    "mesh": {
+                        "mesh": "p3",
+                        "material": "25"
+                    }
+                }
+            ],
+            "translation": [
+                0.0,
+                0.0000038,
+                0.0000104
+            ],
+            "rotation": [
+                0.7071066,
+                0.0,
+                0.0,
+                0.7071068
+            ],
+            "scaling": [
+                10.0,
+                9.999999,
+                9.999999
+            ]
+        },
+        "98": {
+            "name": "Glasses",
+            "parent": "96",
+            "scaling": [
+                5.0,
+                5.0,
+                5.0
+            ],
+            "translation": [
+                0.0,
+                18.8596801,
+                0.0
+            ],
+            "rotation": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ]
+        },
+        "100": {
+            "link": {
+                "name": "3dGlass.obj.cleaner.materialmerger.gles<Sketchfab_model",
+                "file": "assets\\source\\3d_glasses.glb"
+            },
+            "parent": "99",
+            "rotation": [
+                -0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "scaling": [
+                1.0,
+                0.9999889,
+                0.999989
+            ],
+            "translation": [
+                9.5367431640625e-7,
+                0.0000057,
+                0.0000076
+            ]
+        },
+        "101": {
+            "link": {
+                "name": "Object_2<3dGlass.obj.cleaner.materialmerger.gles<Sketchfab_model",
+                "file": "assets\\source\\3d_glasses.glb"
+            },
+            "parent": "100"
+        },
+        "102": {
+            "link": {
+                "name": "Object_3<3dGlass.obj.cleaner.materialmerger.gles<Sketchfab_model",
+                "file": "assets\\source\\3d_glasses.glb"
+            },
+            "parent": "100"
+        },
+        "103": {
+            "link": {
+                "name": "Object_4<3dGlass.obj.cleaner.materialmerger.gles<Sketchfab_model",
+                "file": "assets\\source\\3d_glasses.glb"
+            },
+            "parent": "100"
+        },
+        "99": {
+            "name": "offset",
+            "parent": "98",
+            "translation": [
+                -15.8000011,
+                -13.499999,
+                30.8999977
+            ],
+            "rotation": [
+                -0.7071066,
+                0.0,
+                0.0,
+                0.7071068
+            ],
+            "scaling": [
+                1.0,
+                0.9999945,
+                0.9999945
             ]
         }
     },
@@ -447,6 +563,24 @@
             "link": {
                 "name": "mesh_0",
                 "file": "assets\\source\\face_model_with_iris.obj"
+            }
+        },
+        "3": {
+            "link": {
+                "name": "Object_0",
+                "file": "assets\\source\\3d_glasses.glb"
+            }
+        },
+        "4": {
+            "link": {
+                "name": "Object_1",
+                "file": "assets\\source\\3d_glasses.glb"
+            }
+        },
+        "5": {
+            "link": {
+                "name": "Object_2",
+                "file": "assets\\source\\3d_glasses.glb"
             }
         }
     },
@@ -652,6 +786,24 @@
                     0.5,
                     1.0
                 ]
+            }
+        },
+        "92": {
+            "link": {
+                "name": "Bluelen1Mtl",
+                "file": "assets\\source\\3d_glasses.glb"
+            }
+        },
+        "93": {
+            "link": {
+                "name": "Middle1Mtl",
+                "file": "assets\\source\\3d_glasses.glb"
+            }
+        },
+        "94": {
+            "link": {
+                "name": "Redlen1Mtl",
+                "file": "assets\\source\\3d_glasses.glb"
             }
         }
     },
@@ -1150,6 +1302,10 @@
         },
         "2": {
             "fileName": "assets/source/face_model_with_iris.obj",
+            "importerName": ""
+        },
+        "3": {
+            "fileName": "assets/source/3d_glasses.glb",
             "importerName": ""
         }
     },
