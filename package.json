@@ -1,0 +1,28 @@
+{
+    "name": "FaceTracking",
+    "version": "1.0.0",
+    "description": "My Wonderland project",
+    "main": "js/index.js",
+    "type": "module",
+    "module": "js/index.js",
+    "scripts": {
+        "build": "echo \"The 'build' script is run by the editor and should produce your application bundle\""
+    },
+    "keywords": [
+        "wonderland-engine"
+    ],
+    "dependencies": {
+        "@wonderlandengine/components": "^1.2.1",
+        "gl-matrix": "^3.4.3",
+        "@wonderlandengine/api": "file:../../../Tools/Wonderland Nightly/js/api/wonderlandengine-api.tgz",
+        "@mediapipe/face_mesh": "0.4.1633559619",
+        "@mediapipe/camera_utils": "^0.3.1675466862",
+        "@mediapipe/drawing_utils": "^0.3.1675466124"
+    },
+    "backup": {
+        "@mediapipe/control_utils": "^0.6.1675466023"
+    },
+    "overrides": {
+        "@wonderlandengine/api": "$@wonderlandengine/api"
+    }
+}
