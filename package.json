@@ -17,11 +17,10 @@
         "@wonderlandengine/api": "file:../../../Tools/Wonderland Nightly/js/api/wonderlandengine-api.tgz",
         "@mediapipe/face_mesh": "0.4.1633559619",
         "@mediapipe/camera_utils": "^0.3.1675466862",
-        "@mediapipe/drawing_utils": "^0.3.1675466124"
-    },
-    "backup": {
+        "@mediapipe/drawing_utils": "^0.3.1675466124",
         "@mediapipe/control_utils": "^0.6.1675466023"
     },
+    "backup": {},
     "overrides": {
         "@wonderlandengine/api": "$@wonderlandengine/api"
     }

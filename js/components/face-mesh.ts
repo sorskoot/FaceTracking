@@ -18,10 +18,10 @@ const solutionOptions: Options = {
     selfieMode: true,
     enableFaceGeometry: true,
     maxNumFaces: 1,
-    //refineLandmarks: true,
-    minDetectionConfidence: 0.5,
-    minTrackingConfidence: 0.5,
-    cameraVerticalFovDegrees: 90,
+    refineLandmarks: false,
+    minDetectionConfidence: 0.6,
+    minTrackingConfidence: 0.6,
+    cameraVerticalFovDegrees: 45,
 };
 
 export class FaceMeshComponent extends Component {
@@ -40,6 +40,7 @@ export class FaceMeshComponent extends Component {
 
     videoWidth: number;
     videoHeight: number;
+    private _selectedDevice: MediaDeviceInfo;
 
     init() {}
 
@@ -82,10 +83,19 @@ export class FaceMeshComponent extends Component {
         // 10 /
         // 2 /
         // Math.tan(((this._view.fov / 2) * Math.PI) / 180);
+        this.camera.setPositionWorld([0, 0, -z]);
 
-        this.camera.setPositionWorld([0, 0, z]);
+        const str = 'Elgato Facecam (0fd9:0078)';
+
         if (!WL_EDITOR) {
-            this._startFaceMesh();
+            navigator.mediaDevices.enumerateDevices().then((devices) => {
+                devices.forEach((device) => {
+                    if (device.kind === 'videoinput' && device.label === str) {
+                        this._selectedDevice = device;
+                    }
+                });
+                this._startFaceMesh();
+            });
         }
     }
 
@@ -111,11 +121,22 @@ export class FaceMeshComponent extends Component {
             onFrame: async () => {
                 await faceMesh.send({ image: this._videoElement });
             },
-            width: this.engine.canvas.width, //1280,
-            height: this.engine.canvas.height, //720,
+            width: this.engine.canvas.clientWidth, //1280,
+            height: this.engine.canvas.clientHeight, //720,
         });
-
         camera.start();
+        //set src to this._selectedDevice
+        if (this._selectedDevice) {
+            navigator.mediaDevices
+                .getUserMedia({
+                    video: { deviceId: this._selectedDevice.deviceId },
+                })
+                .then((e) => {
+                    this._videoElement.srcObject = e;
+                });
+        } else {
+            console.warn('No video input device selected');
+        }
     }
 
     update(dt: number) {}
@@ -174,9 +195,9 @@ export class FaceMeshComponent extends Component {
                 );
 
                 // Adjust coordinate system from Mediapipe to Wonderland Engine
-                const adjustMat = mat4.create();
-                mat4.fromScaling(adjustMat, [1, 1, 1]); // Flip Y and Z axes
-                mat4.multiply(mat, adjustMat, mat);
+                // const adjustMat = mat4.create();
+                // mat4.fromScaling(adjustMat, [1, 1, 1]);
+                // mat4.multiply(mat, adjustMat, mat);
 
                 // Extract rotation and translation
                 const rotationQuat = quat.create();
@@ -185,7 +206,7 @@ export class FaceMeshComponent extends Component {
                 mat4.getTranslation(translate, mat);
 
                 // Optional: Apply a scaling factor if translation seems off
-                const scaleFactor = 1.0; // Adjust this if needed
+                const scaleFactor = 1; // Adjust this if needed
                 vec3.scale(translate, translate, scaleFactor);
 
                 // Apply rotation and translation to your object

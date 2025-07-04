@@ -7,10 +7,10 @@
                 {
                     "type": "view",
                     "view": {
-                        "projectionType": "orthographic",
+                        "projectionType": "perspective",
                         "extent": 100.0,
                         "far": 1000.0,
-                        "fov": 63.0
+                        "fov": 90.0
                     }
                 },
                 {
@@ -168,7 +168,7 @@
                         "mesh": "p1",
                         "material": "22"
                     },
-                    "active": true
+                    "active": false
                 }
             ],
             "rotation": [
@@ -198,7 +198,7 @@
                         "mesh": "p1",
                         "material": "25"
                     },
-                    "active": true
+                    "active": false
                 }
             ],
             "rotation": [
@@ -228,7 +228,7 @@
                         "mesh": "p1",
                         "material": "26"
                     },
-                    "active": true
+                    "active": false
                 }
             ],
             "translation": [
@@ -258,7 +258,7 @@
                         "mesh": "p3",
                         "material": "26"
                     },
-                    "active": true
+                    "active": false
                 }
             ],
             "translation": [
@@ -288,7 +288,7 @@
                         "mesh": "p1",
                         "material": "20"
                     },
-                    "active": true
+                    "active": false
                 }
             ],
             "translation": [
@@ -383,7 +383,8 @@
                     "originalIndex": 0,
                     "mesh": {
                         "material": "22"
-                    }
+                    },
+                    "active": true
                 }
             ]
         },
