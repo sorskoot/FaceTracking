@@ -40,9 +40,14 @@
                         "camera": "77",
                         "leftEye": "93",
                         "rightEye": "94",
-                        "useLandmarks": true,
+                        "useLandmarks": false,
                         "depthOffset": 10.0,
-                        "nose": "97"
+                        "nose": "97",
+                        "updateFaceMesh": false,
+                        "face": "2",
+                        "glasses": "98",
+                        "faceObject": "95",
+                        "faceMaterial": 3
                     }
                 }
             ],
@@ -388,9 +393,10 @@
                 {
                     "originalIndex": 0,
                     "mesh": {
-                        "material": "22"
+                        "material": "22",
+                        "mesh": "2"
                     },
-                    "active": false
+                    "active": true
                 }
             ]
         },
@@ -514,6 +520,55 @@
                 0.9999945,
                 0.9999945
             ]
+        },
+        "105": {
+            "link": {
+                "name": "468_tris",
+                "file": "assets\\source\\canonical_face_model.fbx"
+            },
+            "name": "canonical_face",
+            "components": [
+                {
+                    "originalIndex": 0,
+                    "mesh": {
+                        "material": "22"
+                    }
+                }
+            ],
+            "scaling": [
+                1.0,
+                1.0,
+                1.0
+            ]
+        },
+        "106": {
+            "link": {
+                "name": "object_0",
+                "file": "assets\\source\\canonical_face_model.obj"
+            },
+            "components": [
+                {
+                    "originalIndex": 0,
+                    "mesh": {
+                        "material": "25"
+                    }
+                }
+            ]
+        },
+        "107": {
+            "link": {
+                "name": "object_0",
+                "file": "assets\\source\\face_model_with_iris.obj"
+            },
+            "components": [
+                {
+                    "originalIndex": 0,
+                    "mesh": {
+                        "material": "26",
+                        "mesh": "2"
+                    }
+                }
+            ]
         }
     },
     "meshes": {
@@ -563,7 +618,8 @@
             "link": {
                 "name": "mesh_0",
                 "file": "assets\\source\\face_model_with_iris.obj"
-            }
+            },
+            "name": "mesh_478"
         },
         "3": {
             "link": {
@@ -581,6 +637,19 @@
             "link": {
                 "name": "Object_2",
                 "file": "assets\\source\\3d_glasses.glb"
+            }
+        },
+        "6": {
+            "link": {
+                "name": "mesh_0",
+                "file": "assets\\source\\canonical_face_model.fbx"
+            },
+            "name": "canonical_face_mesh"
+        },
+        "7": {
+            "link": {
+                "name": "mesh_0",
+                "file": "assets\\source\\canonical_face_model.obj"
             }
         }
     },
@@ -1306,6 +1375,14 @@
         },
         "3": {
             "fileName": "assets/source/3d_glasses.glb",
+            "importerName": ""
+        },
+        "4": {
+            "fileName": "assets/source/canonical_face_model.fbx",
+            "importerName": ""
+        },
+        "5": {
+            "fileName": "assets/source/canonical_face_model.obj",
             "importerName": ""
         }
     },

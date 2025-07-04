@@ -13,6 +13,9 @@ import {
     Object3D,
     ProjectionType,
     ViewComponent,
+    Mesh,
+    MeshAttribute,
+    MeshComponent,
 } from '@wonderlandengine/api';
 import { property } from '@wonderlandengine/api/decorators.js';
 import { mat4, quat, quat2, vec3 } from 'gl-matrix';
@@ -51,6 +54,15 @@ export class FaceMeshComponent extends Component {
     @property.float(1.0)
     depthOffset = 1.0;
 
+    @property.bool(false)
+    updateFaceMesh = false;
+
+    @property.object({ required: true })
+    faceObject!: Object3D;
+
+    @property.mesh()
+    face?: Mesh;
+
     videoWidth: number;
     videoHeight: number;
     private _selectedDevice: MediaDeviceInfo;
@@ -66,6 +78,12 @@ export class FaceMeshComponent extends Component {
             this._view.projectionType = ProjectionType.Orthographic;
         } else {
             this._view.projectionType = ProjectionType.Perspective;
+        }
+
+        if (this.updateFaceMesh) {
+            this.faceObject.resetPositionRotation();
+            this.faceObject.resetScaling();
+            this.faceObject.getComponent(MeshComponent).active = true;
         }
         const str = 'Elgato Facecam (0fd9:0078)';
 
@@ -156,20 +174,34 @@ export class FaceMeshComponent extends Component {
             results.multiFaceLandmarks &&
             results.multiFaceLandmarks.length > 0
         ) {
-            this._landmarkData = {
-                eyemid: this._convertLandmark(
-                    results.multiFaceLandmarks[0][168]
-                ),
-                eyeInnerLeft: this._convertLandmark(
-                    results.multiFaceLandmarks[0][463]
-                ),
-                eyeInnerRight: this._convertLandmark(
-                    results.multiFaceLandmarks[0][243]
-                ),
+            if (this.updateFaceMesh) {
+                const updatedLM = results.multiFaceLandmarks[0].map((lm) =>
+                    this._convertLandmark(lm)
+                );
 
-                nose: this._convertLandmark(results.multiFaceLandmarks[0][1]),
-            };
+                const positions = this.face.attribute(MeshAttribute.Position);
+                const flatLM = updatedLM.flat();
+                if (positions) {
+                    positions.set(0, flatLM);
+                }
+                this.face.update();
+            } else {
+                this._landmarkData = {
+                    eyemid: this._convertLandmark(
+                        results.multiFaceLandmarks[0][168]
+                    ),
+                    eyeInnerLeft: this._convertLandmark(
+                        results.multiFaceLandmarks[0][463]
+                    ),
+                    eyeInnerRight: this._convertLandmark(
+                        results.multiFaceLandmarks[0][243]
+                    ),
 
+                    nose: this._convertLandmark(
+                        results.multiFaceLandmarks[0][1]
+                    ),
+                };
+            }
             return;
         }
         if (
@@ -222,6 +254,7 @@ export class FaceMeshComponent extends Component {
             this.rightEye.setPositionWorld(this._landmarkData.eyeInnerRight);
             this.nose.setPositionWorld(this._landmarkData.nose);
             this._landmarkData = null; // Clear after applying
+        } else if (this.updateFaceMesh && this.face) {
         }
     }
 
